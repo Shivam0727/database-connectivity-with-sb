@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.shivam.entities.Book;
@@ -31,7 +30,7 @@ public class BookController {
 		if (list.size() <= 0) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
-		return ResponseEntity.of(Optional.of(list));
+		return ResponseEntity.status(HttpStatus.CREATED).body(list);
 	}
 
 	// Get single book by ID handler :
@@ -47,9 +46,8 @@ public class BookController {
 	// Post single book handler :
 	@PostMapping("/books")
 	public ResponseEntity<Book> addBook(@RequestBody Book book) {
-		Book b = null;
 		try {
-			b = this.bookService.addBook(book);
+			this.bookService.addBook(book);
 			return ResponseEntity.status(HttpStatus.CREATED).build();
 		} catch (Exception e) {
 			e.printStackTrace();

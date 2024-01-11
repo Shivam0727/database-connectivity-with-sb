@@ -1,25 +1,22 @@
 package com.shivam.services;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.shivam.entities.Book;
+import com.shivam.repository.BookRepository;
 
 @Service
 public class BookService {
-
-	private static List<Book> list = new ArrayList<>();
-	static {
-		list.add(new Book(1, "Java Complete reference", "James"));
-		list.add(new Book(2, "Head First Java", "Goslin"));
-		list.add(new Book(3, "Learn Fundamental of frameworks", "Johnson"));
-	}
+	
+	@Autowired
+	private BookRepository bookRepository;
 
 	// Get all Books :
 	public List<Book> getAllBooks() {
+		List<Book> list = (List<Book>) this.bookRepository.findAll();
 		return list;
 	}
 
@@ -27,7 +24,7 @@ public class BookService {
 	public Book getBookById(int id) {
 		Book book = null;
 		try {
-			book = list.stream().filter(e -> e.getId() == id).findFirst().get();
+			book = this.bookRepository.findById(id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -36,24 +33,18 @@ public class BookService {
 
 	// Adding the book :
 	public Book addBook(Book book) {
-		list.add(book);
-		return book;
+		Book result = this.bookRepository.save(book);
+		return result;
 	}
 
 	// Delete book :
 	public void deleteBook(int id) {
-		list = list.stream().filter(book -> book.getId() != id).collect(Collectors.toList());
+		this.bookRepository.deleteById(id);
 	}
 
 	// Updating book :
 	public void updateBook(Book book, int bookId) {
-		list = list.stream().map(b -> {
-			if (b.getId() == bookId) {
-				b.setTitle(book.getTitle());
-				b.setAuthor(book.getAuthor());
-			}
-			return b;
-		}).collect(Collectors.toList());
-
+		this.bookRepository.save(book);
+		book.setId(bookId);
 	}
 }
